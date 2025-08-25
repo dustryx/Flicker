@@ -281,5 +281,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // M-Pesa payment route
+  app.post('/api/mpesa/initiate', isAuthenticated, async (req: any, res) => {
+    try {
+      const { phoneNumber, amount } = req.body;
+      
+      // In production, integrate with Safaricom M-Pesa API
+      // For demo, we'll simulate the process
+      console.log(`M-Pesa payment initiated: ${phoneNumber} - KSH ${amount}`);
+      
+      // Simulate STK Push
+      setTimeout(() => {
+        console.log('M-Pesa payment confirmed');
+      }, 3000);
+      
+      res.json({ 
+        message: 'Payment initiated successfully',
+        transactionId: `MPESA_${Date.now()}`,
+        status: 'pending'
+      });
+    } catch (error) {
+      console.error('M-Pesa payment error:', error);
+      res.status(400).json({ message: 'Payment initiation failed' });
+    }
+  });
+
   return httpServer;
 }

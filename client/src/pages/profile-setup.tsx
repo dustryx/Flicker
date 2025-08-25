@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { ArrowLeft, Plus, Camera } from "lucide-react";
+import PhotoUpload from "@/components/PhotoUpload";
 
 const INTERESTS = [
   "Travel", "Music", "Fitness", "Movies", "Cooking", "Reading",
@@ -107,20 +108,11 @@ export default function ProfileSetup() {
               <CardTitle className="text-lg">Add Photos</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-3 gap-4">
-                {Array(6).fill(0).map((_, index) => (
-                  <div 
-                    key={index}
-                    className="aspect-square bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center hover:border-pink-400 transition-colors cursor-pointer"
-                    data-testid={`photo-upload-${index}`}
-                  >
-                    <div className="text-center">
-                      <Camera className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                      <p className="text-xs text-gray-500">Add Photo</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <PhotoUpload
+                photos={formData.photos}
+                onPhotosChange={(photos) => setFormData(prev => ({ ...prev, photos }))}
+                maxPhotos={6}
+              />
             </CardContent>
           </Card>
 

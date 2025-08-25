@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, ArrowLeft, Crown, Infinity, Star, RotateCcw, Eye } from "lucide-react";
 import CheckoutForm from "@/components/CheckoutForm";
+import MPesaPayment from "@/components/MPesaPayment";
 
 // Use a test key for development
 const STRIPE_PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLIC_KEY || 'pk_test_51234567890abcdef';
@@ -66,6 +67,7 @@ const PRICING_PLANS = [
 export default function Premium() {
   const [selectedPlan, setSelectedPlan] = useState(1); // Default to 6 months
   const [showCheckout, setShowCheckout] = useState(false);
+  const [showMPesa, setShowMPesa] = useState(false);
   const [clientSecret, setClientSecret] = useState("");
 
   const handleContinue = async () => {
@@ -112,6 +114,42 @@ export default function Premium() {
           </div>
         </div>
       </Elements>
+    );
+  }
+  
+  if (showMPesa) {
+    const selectedPlanData = PRICING_PLANS[selectedPlan];
+    const amountInKES = Math.round(selectedPlanData.price * 130); // Convert USD to KES (approximate rate)
+    
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50">
+        <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-6 text-white">
+          <div className="flex items-center mb-4">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setShowMPesa(false)}
+              className="text-white hover:bg-white/20 mr-4"
+              data-testid="button-back-to-plans"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <h1 className="text-2xl font-bold">M-Pesa Payment</h1>
+          </div>
+          <p className="opacity-90">Secure mobile money payment</p>
+        </div>
+        
+        <div className="p-6 flex items-center justify-center min-h-[calc(100vh-200px)]">
+          <MPesaPayment
+            amount={amountInKES}
+            onSuccess={() => {
+              setShowMPesa(false);
+              // Handle successful payment
+            }}
+            onCancel={() => setShowMPesa(false)}
+          />
+        </div>
+      </div>
     );
   }
 
@@ -217,15 +255,26 @@ export default function Premium() {
           </div>
         </div>
 
-        {/* Payment Button */}
-        <Button
-          onClick={handleContinue}
-          className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white py-4 text-lg font-semibold hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
-          data-testid="button-continue-payment"
-        >
-          <Crown className="w-5 h-5 mr-2" />
-          Continue with Premium
-        </Button>
+        {/* Payment Buttons */}
+        <div className="space-y-3">
+          <Button
+            onClick={handleContinue}
+            className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white py-4 text-lg font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
+            data-testid="button-continue-payment"
+          >
+            <Crown className="w-5 h-5 mr-2" />
+            Pay with Card
+          </Button>
+          
+          <Button
+            onClick={() => setShowMPesa(true)}
+            className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 text-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+            data-testid="button-mpesa-payment"
+          >
+            <Crown className="w-5 h-5 mr-2" />
+            Pay with M-Pesa
+          </Button>
+        </div>
         
         <p className="text-center text-xs text-gray-500">
           Auto-renewal. Cancel anytime in settings.
