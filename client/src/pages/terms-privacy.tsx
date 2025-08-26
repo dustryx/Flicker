@@ -8,11 +8,10 @@ import { useLocation } from "wouter";
 
 export default function TermsPrivacy() {
   const [, setLocation] = useLocation();
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
+  const [acceptedAll, setAcceptedAll] = useState(false);
 
   const handleContinue = () => {
-    if (acceptedTerms && acceptedPrivacy) {
+    if (acceptedAll) {
       // Store acceptance in localStorage
       localStorage.setItem('termsAccepted', 'true');
       localStorage.setItem('privacyAccepted', 'true');
@@ -21,7 +20,7 @@ export default function TermsPrivacy() {
     }
   };
 
-  const canContinue = acceptedTerms && acceptedPrivacy;
+  const canContinue = acceptedAll;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-orange-50">
@@ -93,17 +92,6 @@ export default function TermsPrivacy() {
               </div>
             </ScrollArea>
             
-            <div className="flex items-center space-x-2 mt-4">
-              <Checkbox 
-                id="terms" 
-                checked={acceptedTerms}
-                onCheckedChange={(checked) => setAcceptedTerms(checked === true)}
-                data-testid="checkbox-accept-terms"
-              />
-              <label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                I accept the Terms of Service
-              </label>
-            </div>
           </CardContent>
         </Card>
 
@@ -222,13 +210,13 @@ export default function TermsPrivacy() {
             
             <div className="flex items-center space-x-2 mt-4">
               <Checkbox 
-                id="privacy" 
-                checked={acceptedPrivacy}
-                onCheckedChange={(checked) => setAcceptedPrivacy(checked === true)}
-                data-testid="checkbox-accept-privacy"
+                id="all-terms" 
+                checked={acceptedAll}
+                onCheckedChange={(checked) => setAcceptedAll(checked === true)}
+                data-testid="checkbox-accept-all"
               />
-              <label htmlFor="privacy" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                I accept the Privacy Policy
+              <label htmlFor="all-terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                I accept the Terms of Service and Privacy Policy
               </label>
             </div>
           </CardContent>

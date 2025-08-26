@@ -117,7 +117,7 @@ export default function Home() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 to-orange-50">
-        <LoadingSpinner size="lg" text="Finding amazing people for you..." />
+        <div className="animate-spin w-8 h-8 border-4 border-pink-500 border-t-transparent rounded-full" />
       </div>
     );
   }
