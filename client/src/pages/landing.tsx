@@ -58,7 +58,7 @@ export default function Landing() {
         {/* CTA Buttons */}
         <div className="max-w-sm mx-auto space-y-4">
           <Button 
-            onClick={handleLogin}
+            onClick={() => window.location.href = '/terms-privacy'}
             size="lg"
             className="w-full bg-white text-pink-600 hover:bg-gray-50 font-semibold text-lg py-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
             data-testid="button-login"

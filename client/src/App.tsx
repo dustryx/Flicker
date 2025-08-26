@@ -14,6 +14,7 @@ import Chat from "@/pages/chat";
 import Settings from "@/pages/settings";
 import Premium from "@/pages/premium";
 import NotFound from "@/pages/not-found";
+import TermsPrivacy from "@/pages/terms-privacy";
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -29,7 +30,10 @@ function Router() {
   return (
     <Switch>
       {!isAuthenticated ? (
-        <Route path="/" component={Landing} />
+        <>
+          <Route path="/" component={Landing} />
+          <Route path="/terms-privacy" component={TermsPrivacy} />
+        </>
       ) : (
         <>
           <Route path="/" component={Home} />
@@ -38,6 +42,7 @@ function Router() {
           <Route path="/chat/:matchId" component={Chat} />
           <Route path="/settings" component={Settings} />
           <Route path="/premium" component={Premium} />
+          <Route path="/terms-privacy" component={TermsPrivacy} />
         </>
       )}
       <Route component={NotFound} />
