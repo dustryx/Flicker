@@ -1,3 +1,5 @@
+// storage.ts
+
 import {
   users,
   profiles,
@@ -18,8 +20,9 @@ import { db } from "./db";
 import { eq, and, or, desc, asc, not, inArray, gte, lte } from "drizzle-orm";
 
 export interface IStorage {
-  // User operations (required for Replit Auth)
+  // User operations
   getUser(id: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>; // <- required
   upsertUser(user: UpsertUser): Promise<User>;
   updateStripeCustomerId(userId: string, customerId: string): Promise<User>;
   updateUserStripeInfo(userId: string, info: { customerId: string; subscriptionId: string }): Promise<User>;
@@ -28,7 +31,11 @@ export interface IStorage {
   getProfile(userId: string): Promise<Profile | undefined>;
   createProfile(profile: InsertProfile): Promise<Profile>;
   updateProfile(userId: string, updates: Partial<InsertProfile>): Promise<Profile>;
-  getDiscoverableProfiles(userId: string, limit: number, filters?: { location?: string; ageMin?: number; ageMax?: number; gender?: string }): Promise<Profile[]>;
+  getDiscoverableProfiles(
+    userId: string,
+    limit: number,
+    filters?: { location?: string; ageMin?: number; ageMax?: number; gender?: string }
+  ): Promise<Profile[]>;
   
   // Swipe operations
   createSwipe(swipe: InsertSwipe): Promise<Swipe>;
@@ -49,6 +56,12 @@ export class DatabaseStorage implements IStorage {
   // User operations
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  // ✅ Added this method
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
     return user;
   }
 
@@ -110,8 +123,11 @@ export class DatabaseStorage implements IStorage {
     return updatedProfile;
   }
 
-  async getDiscoverableProfiles(userId: string, limit: number, filters?: { location?: string; ageMin?: number; ageMax?: number; gender?: string }): Promise<Profile[]> {
-    // Get users that current user hasn't swiped on
+  async getDiscoverableProfiles(
+    userId: string,
+    limit: number,
+    filters?: { location?: string; ageMin?: number; ageMax?: number; gender?: string }
+  ): Promise<Profile[]> {
     const swipedUserIds = await db
       .select({ swipedId: swipes.swipedId })
       .from(swipes)
@@ -128,19 +144,15 @@ export class DatabaseStorage implements IStorage {
       whereConditions.push(not(inArray(profiles.userId, swipedIds)));
     }
 
-    // Add filters if provided
     if (filters?.location) {
       whereConditions.push(eq(profiles.location, filters.location));
     }
-    
     if (filters?.ageMin) {
       whereConditions.push(gte(profiles.age, filters.ageMin));
     }
-    
     if (filters?.ageMax) {
       whereConditions.push(lte(profiles.age, filters.ageMax));
     }
-    
     if (filters?.gender) {
       whereConditions.push(eq(profiles.gender, filters.gender));
     }
